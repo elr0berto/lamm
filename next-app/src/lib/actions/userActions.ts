@@ -21,8 +21,8 @@ export async function addUser(formData: FormData) {
 
     revalidatePath('/');
     return { success: true, user };
-  } catch (error: any) {
-    if (error.code === 'P2002') {
+  } catch (error: unknown) {
+    if ((error as { code?: string }).code === 'P2002') {
       return { error: 'Email or username already exists' };
     }
 
