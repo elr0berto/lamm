@@ -121,6 +121,12 @@ export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
         game.scene.add(key, DynamicScene, true);
     }
 
+    const showSplitScreenDemo = () => {
+        if (phaserRef.current?.game) {
+            phaserRef.current.game.scene.start('SplitScreenDemo');
+        }
+    }
+
     // Event emitted from the PhaserGame component
     const currentScene = (scene: Phaser.Scene) => {
 
@@ -145,6 +151,9 @@ export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
             </div>
             <div>
                 <button className="button" onClick={createDynamicScene}>Create Dynamic Scene</button>
+            </div>
+            <div>
+                <button className="button" onClick={showSplitScreenDemo}>Show Split Screen Demo</button>
             </div>
         </div>
     </div>;
