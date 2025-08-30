@@ -27,9 +27,9 @@ export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
             if (!scene) return;
 
             // If we're on the MainMenu use its custom changeScene method (to go to Game)
-            if (scene.scene.key === 'MainMenu' && (scene as any).changeScene)
+            if (scene.scene.key === 'MainMenu' && 'changeScene' in scene)
             {
-                (scene as any).changeScene();
+                (scene as { changeScene: () => void }).changeScene();
             }
             else
             {
