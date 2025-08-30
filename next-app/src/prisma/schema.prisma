@@ -9,9 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "mysql"
-  url               = env("PRISMA_DATABASE_URL")
-  shadowDatabaseUrl = env("PRISMA_SHADOW_DATABASE_URL")
+  provider = "sqlite"
+  url      = env("PRISMA_DATABASE_URL")
 }
 
 model User {
