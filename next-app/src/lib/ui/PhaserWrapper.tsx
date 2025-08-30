@@ -3,6 +3,8 @@
 import {useRef, useState} from "react";
 import {IRefPhaserGame, PhaserGame} from "@/lib/ui/PhaserGame";
 import {MainMenu} from "@/lib/ui/scenes/MainMenu";
+import Phaser from 'phaser';
+import { EventBus } from '@/lib/util/EventBus';
 
 interface PhaserWrapperProps {
     usersCount: number;
@@ -21,11 +23,18 @@ export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
 
         if(phaserRef.current)
         {
-            const scene = phaserRef.current.scene as MainMenu;
+            const scene = phaserRef.current.scene;
+            if (!scene) return;
 
-            if (scene)
+            // If we're on the MainMenu use its custom changeScene method (to go to Game)
+            if (scene.scene.key === 'MainMenu' && (scene as any).changeScene)
             {
-                scene.changeScene();
+                (scene as any).changeScene();
+            }
+            else
+            {
+                // For any other scene (Game, GameOver, dynamic scenes, etc.) go back to MainMenu
+                scene.scene.start('MainMenu');
             }
         }
     }
@@ -79,6 +88,39 @@ export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
         }
     }
 
+    const createDynamicScene = () => {
+        if (!phaserRef.current?.game) return;
+        const game = phaserRef.current.game;
+        const key = `DynamicScene_${Date.now().toString(36)}`;
+
+        class DynamicScene extends Phaser.Scene {
+            constructor() { super(key); }
+            create() {
+                const w = this.scale.width;
+                const h = this.scale.height;
+                // Random background color
+                this.cameras.main.setBackgroundColor(Phaser.Display.Color.RandomRGB().color);
+                this.add.text(w / 2, h / 2, key, {
+                    fontFamily: 'Arial Black', fontSize: 42, color: '#ffffff',
+                    stroke: '#000000', strokeThickness: 6, align: 'center'
+                }).setOrigin(0.5);
+                this.add.text(w / 2, h - 40, 'Press M to return to MainMenu', {
+                    fontFamily: 'Arial', fontSize: 20, color: '#ffff00',
+                    stroke: '#000000', strokeThickness: 3
+                }).setOrigin(0.5);
+
+                this.input.keyboard?.on('keydown-M', () => {
+                    this.scene.start('MainMenu');
+                });
+
+                EventBus.emit('current-scene-ready', this);
+            }
+        }
+
+        // Add and start new scene immediately
+        game.scene.add(key, DynamicScene, true);
+    }
+
     // Event emitted from the PhaserGame component
     const currentScene = (scene: Phaser.Scene) => {
 
@@ -90,7 +132,7 @@ export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
         <PhaserGame ref={phaserRef} currentActiveScene={currentScene} usersCount={usersCount} />
         <div>
             <div>
-                <button className="button" onClick={changeScene}>Change Scene</button>
+                <button className="button" onClick={changeScene}>Change / Toggle Scene</button>
             </div>
             <div>
                 <button disabled={canMoveSprite} className="button" onClick={moveSprite}>Toggle Movement</button>
@@ -100,6 +142,9 @@ export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
             </div>
             <div>
                 <button className="button" onClick={addSprite}>Add New Sprite</button>
+            </div>
+            <div>
+                <button className="button" onClick={createDynamicScene}>Create Dynamic Scene</button>
             </div>
         </div>
     </div>;
