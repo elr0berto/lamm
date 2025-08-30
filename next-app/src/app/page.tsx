@@ -1,12 +1,9 @@
 import prisma from '@/lib/prisma'
-import {GameWrapper} from "@/lib/ui/GameWrapper";
+import { GameWithUsers } from '@/lib/ui/GameWithUsers';
 
 
 export default async function Home() {
-
     const users = await prisma.user.findMany();
-    return <div>
-        users.length {users.length}
-        <GameWrapper/>
-    </div>;
+
+    return <GameWithUsers initialUsers={users} />;
 }

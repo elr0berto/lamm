@@ -4,8 +4,11 @@ import {useRef, useState} from "react";
 import {IRefPhaserGame, PhaserGame} from "@/lib/ui/PhaserGame";
 import {MainMenu} from "@/lib/ui/scenes/MainMenu";
 
+interface PhaserWrapperProps {
+    usersCount: number;
+}
 
-export default function PhaserWrapper() {
+export default function PhaserWrapper({ usersCount }: PhaserWrapperProps) {
 
     // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true);
@@ -84,7 +87,7 @@ export default function PhaserWrapper() {
     }
 
     return <div id="app">
-        <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
+        <PhaserGame ref={phaserRef} currentActiveScene={currentScene} usersCount={usersCount} />
         <div>
             <div>
                 <button className="button" onClick={changeScene}>Change Scene</button>
@@ -99,5 +102,5 @@ export default function PhaserWrapper() {
                 <button className="button" onClick={addSprite}>Add New Sprite</button>
             </div>
         </div>
-    </div>
+    </div>;
 }

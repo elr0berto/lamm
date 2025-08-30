@@ -7,7 +7,9 @@ export class MainMenu extends Scene
     background?: GameObjects.Image;
     logo?: GameObjects.Image;
     title?: GameObjects.Text;
+    usersCountText?: GameObjects.Text;
     logoTween?: Phaser.Tweens.Tween | null;
+    usersCount: number = 0;
 
     constructor ()
     {
@@ -25,6 +27,21 @@ export class MainMenu extends Scene
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
+
+        // Add users count text
+        this.usersCountText = this.add.text(512, 520, `Users: ${this.usersCount}`, {
+            fontFamily: 'Arial Black', fontSize: 24, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 4,
+            align: 'center'
+        }).setOrigin(0.5).setDepth(100);
+
+        // Listen for users count updates
+        EventBus.on('users-count', (count: number) => {
+            this.usersCount = count;
+            if (this.usersCountText) {
+                this.usersCountText.setText(`Users: ${count}`);
+            }
+        });
 
         EventBus.emit('current-scene-ready', this);
     }

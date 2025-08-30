@@ -13,10 +13,11 @@ export interface IRefPhaserGame
 
 interface IProps
 {
-    currentActiveScene?: (scene_instance: Phaser.Scene) => void
+    currentActiveScene?: (scene_instance: Phaser.Scene) => void;
+    usersCount: number;
 }
 
-export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame({ currentActiveScene }, ref)
+export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame({ currentActiveScene, usersCount }, ref)
 {
     const game = useRef<Phaser.Game | null>(null!);
 
@@ -24,7 +25,6 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame
     {
         if (game.current === null)
         {
-
             game.current = StartGame("game-container");
 
             if (typeof ref === 'function')
@@ -34,7 +34,6 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame
             {
                 ref.current = { game: game.current, scene: null };
             }
-
         }
 
         return () =>
@@ -52,39 +51,32 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame
 
     useEffect(() =>
     {
+        // Emit users count when component mounts or when usersCount changes
+        EventBus.emit('users-count', usersCount);
+
         EventBus.on('current-scene-ready', (scene_instance: Phaser.Scene) =>
         {
             if (currentActiveScene && typeof currentActiveScene === 'function')
             {
-
                 currentActiveScene(scene_instance);
-
             }
 
             if (typeof ref === 'function')
             {
-
                 ref({ game: game.current, scene: scene_instance });
-
             } else if (ref)
             {
-
                 ref.current = { game: game.current, scene: scene_instance };
-
             }
-
         });
+
         return () =>
         {
-
             EventBus.removeListener('current-scene-ready');
-
         }
-    }, [currentActiveScene, ref]);
+    }, [currentActiveScene, ref, usersCount]);
 
     return (
         <div id="game-container"></div>
     );
-
 });
-
