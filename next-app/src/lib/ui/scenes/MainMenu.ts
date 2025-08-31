@@ -54,7 +54,9 @@ export class MainMenu extends Scene
             this.logoTween = null;
         }
 
-        this.scene.start('Game');
+        // Start left scene (replacing menu) and launch right scene in parallel
+        this.scene.start('GameLeft');
+        this.scene.launch('GameRight');
     }
 
     moveLogo (reactCallback: ({ x, y }: { x: number, y: number }) => void)
