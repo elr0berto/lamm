@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { GameWrapper } from '@/lib/ui/GameWrapper';
 import { AddUserForm } from '@/lib/ui/AddUserForm';
 import { getUsers } from '@/lib/actions/userActions';
