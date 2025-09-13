@@ -1,9 +1,5 @@
-import prisma from '@/lib/prisma'
-import { GameWithUsers } from '@/lib/ui/GameWithUsers';
+import { GameEditor } from '@/lib/ui/GameEditor';
 
-
-export default async function Home() {
-    const users = await prisma.user.findMany();
-
-    return <GameWithUsers initialUsers={users} />;
+export default function Home() {
+  return <GameEditor />;
 }
